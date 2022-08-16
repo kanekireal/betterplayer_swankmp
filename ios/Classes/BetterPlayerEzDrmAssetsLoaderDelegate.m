@@ -14,6 +14,7 @@ NSString * DEFAULT_LICENSE_SERVER_URL = @"https://fps.ezdrm.com/api/licenses/";
     self = [super init];
     _certificateURL = certificateURL;
     _licenseURL = licenseURL;
+    NSLog(@"EzDrm Inits")
     return self;
 }
 

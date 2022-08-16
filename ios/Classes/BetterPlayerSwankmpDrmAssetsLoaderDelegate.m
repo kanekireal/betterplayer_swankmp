@@ -22,6 +22,7 @@ NSString * DEFAULT_SWANKMP_LICENSE_SERVER_URL = @"https://fairplay.swankmp.net/a
     for(id key in headers) {
         [_headers setObject:headers[key] forKey:key];
         NSLog(@"%@:%@", headers[key], key);
+        NSLog(@"Swankmp Inits")
     }
     
     return self;
