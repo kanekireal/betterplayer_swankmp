@@ -231,6 +231,49 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     return [self setDataSourcePlayerItem:item withKey:key];
 }
 
+///Swankmp
+- (void)setDataSourceURL:(NSURL*)url withKey:(NSString*)key withCertificateUrl:(NSString*)certificateUrl withLicenseUrl:(NSString*)licenseUrl withHeaders:(NSDictionary*)headers withDrmHeaders:(NSDictionary*)drmHeaders withCache:(BOOL)useCache cacheKey:(NSString*)cacheKey cacheManager:(CacheManager*)cacheManager overriddenDuration:(int) overriddenDuration videoExtension: (NSString*) videoExtension
+{
+    _overriddenDuration = 0;
+        if (headers == [NSNull null] || headers == NULL){
+            headers = @{};
+        }
+
+        if (drmHeaders == [NSNull null] || drmHeaders == NULL){
+            drmHeaders = @{};
+        }
+
+        AVPlayerItem* item;
+        if (useCache){
+            if (cacheKey == [NSNull null]){
+                cacheKey = nil;
+            }
+            if (videoExtension == [NSNull null]){
+                videoExtension = nil;
+            }
+
+            item = [cacheManager getCachingPlayerItemForNormalPlayback:url cacheKey:cacheKey videoExtension: videoExtension headers:headers];
+        } else {
+            AVURLAsset* asset = [AVURLAsset URLAssetWithURL:url
+                                                    options:@{@"AVURLAssetHTTPHeaderFieldsKey" : headers}];
+
+            if (certificateUrl && certificateUrl != [NSNull null] && [certificateUrl length] > 0) {
+                NSURL * certificateNSURL = [[NSURL alloc] initWithString: certificateUrl];
+                NSURL * licenseNSURL = [[NSURL alloc] initWithString: licenseUrl];
+                _swankmpLoaderDelegate = [[BetterPlayerSwankmpDrmAssetsLoaderDelegate alloc] init:certificateNSURL withLicenseURL:licenseNSURL withHeaders:drmHeaders];
+                dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, -1);
+                dispatch_queue_t streamQueue = dispatch_queue_create("streamQueue", qos);
+                [asset.resourceLoader setDelegate:_swankmpLoaderDelegate queue:streamQueue];
+            }
+            item = [AVPlayerItem playerItemWithAsset:asset];
+        }
+
+        if (@available(iOS 10.0, *) && overriddenDuration > 0) {
+            _overriddenDuration = overriddenDuration;
+        }
+        return [self setDataSourcePlayerItem:item withKey:key];
+}
+
 - (void)setDataSourcePlayerItem:(AVPlayerItem*)item withKey:(NSString*)key{
     _key = key;
     _stalledCount = 0;

@@ -1,3 +1,7 @@
+## 0.0.84
+* Implement Fairplay SWANKMP
+* With BetterPlayer 0.0.83
+
 ## 0.0.83
 * Updated dependencies
 * Fixed Flutter 3.0 issues
